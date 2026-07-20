@@ -46,8 +46,8 @@ export default function AdminDashboard() {
           <h1 className="text-3xl font-bold text-slate-800">Admin Dashboard</h1>
           <p className="text-slate-600 mt-1">Manage activities, view registrations, and post announcements.</p>
         </div>
-        <button 
-          onClick={() => { localStorage.removeItem('user'); navigate('/login'); }} 
+        <button
+          onClick={() => { localStorage.removeItem('user'); navigate('/login'); }}
           className="px-4 py-2 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100 transition-colors"
         >
           Logout Admin
@@ -97,9 +97,8 @@ export default function AdminDashboard() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 font-medium text-sm transition-colors relative ${
-              activeTab === tab ? 'text-blue-600' : 'text-slate-500 hover:text-slate-700'
-            }`}
+            className={`px-4 py-2 font-medium text-sm transition-colors relative ${activeTab === tab ? 'text-blue-600' : 'text-slate-500 hover:text-slate-700'
+              }`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
             {activeTab === tab && (
@@ -125,7 +124,7 @@ function ManageActivities() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [currentActivity, setCurrentActivity] = useState(null);
-  
+
   const initialFormState = { title: '', description: '', category: 'General', capacity: '', date: '', time: '', venue: '' };
   const [formData, setFormData] = useState(initialFormState);
 
@@ -153,11 +152,11 @@ function ManageActivities() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = isEditing 
-      ? `${import.meta.env.VITE_API_URL}/activities/${currentActivity.id}` 
+    const url = isEditing
+      ? `${import.meta.env.VITE_API_URL}/activities/${currentActivity.id}`
       : `${import.meta.env.VITE_API_URL}/activities`;
     const method = isEditing ? 'PUT' : 'POST';
-    
+
     try {
       const res = await fetch(url, {
         method,
@@ -216,7 +215,7 @@ function ManageActivities() {
         <input name="venue" value={formData.venue} onChange={handleInputChange} placeholder="Venue" required className="input-field" />
         <input name="capacity" type="number" value={formData.capacity} onChange={handleInputChange} placeholder="Capacity" required className="input-field" />
         <textarea name="description" value={formData.description} onChange={handleInputChange} placeholder="Description" rows="2" className="input-field md:col-span-2" />
-        
+
         <div className="md:col-span-2 flex space-x-3">
           <button type="submit" className="btn-primary flex-1">{isEditing ? 'Update Activity' : 'Create Activity'}</button>
           {isEditing && (
@@ -288,15 +287,15 @@ function ViewRegistrations() {
       alert('No data to export.');
       return;
     }
-    
+
     const headers = ['Registration ID', 'Activity Name', 'User Name', 'User Email', 'Registration Date', 'Status'];
     const csvRows = [
       headers.join(','),
-      ...registrations.map(r => 
+      ...registrations.map(r =>
         [r.id, `"${r.activity}"`, `"${r.userName}"`, `"${r.userEmail}"`, r.date, r.status].join(',')
       )
     ];
-    
+
     const csvContent = "data:text/csv;charset=utf-8," + csvRows.join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
@@ -409,22 +408,22 @@ function ManageAnnouncements() {
     <div className="animate-fade-in delay-100">
       <h2 className="text-xl font-semibold text-slate-800 mb-4">Post New Announcement</h2>
       <form onSubmit={handleSubmit} className="mb-8 space-y-4 w-full">
-        <input 
-          name="title" 
-          value={formData.title} 
-          onChange={(e) => setFormData({...formData, title: e.target.value})} 
-          placeholder="Announcement Title" 
-          required 
-          className="input-field w-full" 
+        <input
+          name="title"
+          value={formData.title}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          placeholder="Announcement Title"
+          required
+          className="input-field w-full"
         />
-        <textarea 
-          name="content" 
-          value={formData.content} 
-          onChange={(e) => setFormData({...formData, content: e.target.value})} 
-          placeholder="Announcement Content" 
-          required 
-          rows="3" 
-          className="input-field w-full" 
+        <textarea
+          name="content"
+          value={formData.content}
+          onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+          placeholder="Announcement Content"
+          required
+          rows="3"
+          className="input-field w-full"
         />
         <div className="flex justify-center">
           <button type="submit" className="btn-primary px-6">Post Announcement</button>
@@ -445,8 +444,8 @@ function ManageAnnouncements() {
                 <p className="text-slate-600 mt-1">{ann.content}</p>
                 <p className="text-sm text-slate-400 mt-2">Posted on: {ann.posted_date}</p>
               </div>
-              <button 
-                onClick={() => handleDelete(ann.id)} 
+              <button
+                onClick={() => handleDelete(ann.id)}
                 className="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition-colors"
                 title="Delete Announcement"
               >

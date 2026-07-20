@@ -38,7 +38,7 @@ function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Auth />} />
         <Route path="/register" element={<Auth />} />
-        
+
         {/* User Module Routes wrapped with Sidebar + Navbar Layout */}
         <Route element={<UserLayout />}>
           <Route path="/activities" element={<ActivityListing />} />
