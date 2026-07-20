@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased font-sans;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-blue-600 text-white font-medium py-2.5 px-5 rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center justify-center gap-2;
+  }
+  
+  .glass-panel {
+    @apply bg-white rounded-xl shadow-sm border border-slate-200 transition-all duration-300 hover:shadow-md;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-2.5 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow duration-200;
+  }
+
+  .badge {
+    @apply px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider;
+  }
+  .badge-primary {
+    @apply bg-blue-50 text-blue-700;
+  }
+  .badge-success {
+    @apply bg-green-50 text-green-700;
+  }
+  .badge-danger {
+    @apply bg-red-50 text-red-700;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+  .delay-100 { animation-delay: 100ms; opacity: 0; }
+  .delay-200 { animation-delay: 200ms; opacity: 0; }
+  .delay-300 { animation-delay: 300ms; opacity: 0; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
