@@ -1,105 +1,110 @@
 # Smart Community Service Management System
 
-## Overview
-This is a web-based Distributed Application designed for a local community centre to manage community service activities, registrations, and announcements. The project utilizes a modern 3-tier architecture: Presentation (React), Application (Node.js/Express), and Data (SQLite currently, migrating to MySQL/Firebase).
+A three-tier distributed web application for managing community activities, schedules,
+registrations, participation history, and announcements.
 
-## Current Project Status
-The core foundation of the project has been fully implemented, covering **all Functional and Non-Functional Requirements** specified in the assignment brief. 
+## Final technology stack
 
-### Completed Features:
-- **Authentication:** Registration and Login flows with role-based access control (Admin vs. Normal User). Passwords are securely hashed using SHA-256 (`crypto` module).
-- **User Dashboard:** 
-  - Browse available volunteer programmes and events.
-  - Register for activities with capacity checking.
-  - View personal participation history.
-  - View upcoming schedules and centre announcements.
-- **Admin Dashboard (SPA Tabs):**
-  - **Manage Activities:** Full CRUD functionality to create, edit, and delete activities. Date, time, and venue are handled directly in the activity creation form.
-  - **View Registrations:** Track all resident registrations and export the data to a CSV report.
-  - **Manage Announcements:** Post center-wide notices to keep the community informed.
-- **Backend Infrastructure:** A complete Node.js/Express REST API serving the frontend.
-- **Testing Database:** A temporary **SQLite** database (`database.sqlite`) is actively being used for local testing to ensure all API endpoints and data persistence requirements work seamlessly.
+- Frontend: React + Vite + Tailwind CSS
+- Backend: Node.js + Express
+- Database: Oracle MySQL 8.4 Community Server through `mysql2`
+- Architecture: Three-tier client-server architecture
 
----
+The original SQLite file is retained only as a legacy prototype. The running backend now uses
+the relational `smart_community` database on Oracle MySQL 8.4.
 
-## Team Roles & Upcoming Adjustments
+## Database design
 
-### 🧑‍💻 Saabiresh (Core Frontend & Backend)
-- **Status:** **Completed (Backend) +  Completed Halfway (Frontend).** 
-- **Work done:** Built the full React SPA structure, setup Node.js/Express APIs, integrated temporary SQLite database for testing, and ensured alignment with the required navigation flows.
+The implementation contains five related InnoDB tables:
 
-### 🎨 Aryan (Frontend UI/UX Polish)
-- **Status:** **Pending / In Progress.**
-- **Task:** Take the existing functional Tailwind CSS interface and upgrade it to a premium look. 
-- **Upcoming Adjustments:** Add glassmorphism, refined color palettes, smooth hover interactions, and ensure high-quality responsiveness across mobile and desktop devices. 
+- `users`
+- `activities`
+- `schedules`
+- `registrations`
+- `announcements`
 
-### 🗄️ Ariharan & Zhi Le (Database Migration)
-- **Status:** **Pending Lecturer Confirmation.**
-- **Task:** Migrate the temporary SQLite database to the final production database (MySQL or Firebase) as required by the tech stack rubric.
-- **Important Note (Firebase vs MySQL):** The assignment rubric explicitly mentions including *Primary Keys and Foreign Keys*. Since Firebase is a NoSQL database (uses Document IDs/References), we are currently waiting for a reply from the lecturer to confirm if using Firebase will result in a deduction of marks. Once confirmed, swap the SQLite queries in `server.js` with the corresponding SDK calls.
+Primary keys, foreign keys, unique constraints, indexes, and an ERD-aligned schema are defined
+in `backend/schema.sql`. Registration capacity is calculated by the
+`activity_availability` view. The registration endpoint uses a database transaction and row
+lock to prevent overbooking during concurrent requests.
 
----
+## Run locally with Oracle MySQL 8.4
 
-## How to Run the Project Locally
+### 1. Start Oracle MySQL
 
-You will need two separate terminal windows to run the frontend and backend servers simultaneously.
+Install Oracle MySQL Community Server 8.4 and configure it as the `MySQL84` Windows service on
+port `3306`. Start it from Windows Services when it is not already running.
 
-### 1. Start the Backend Server
+Do not start the XAMPP **MySQL** button for this project. XAMPP provides MariaDB and would
+conflict with the Oracle `MySQL84` service on port `3306`.
+
+### 2. Configure and create the database
+
+Open a terminal in `backend`:
+
 ```bash
-cd backend
 npm install
+```
+
+Copy `.env.example` to `.env`. Before the first setup, connect as the MySQL root user and run
+`backend/create-app-user.sql` to create the local demonstration account used by `.env`.
+
+Create all tables and insert demonstration data:
+
+```bash
+npm run db:setup
+```
+
+Inspect the tables, foreign keys, and activity availability:
+
+```bash
+npm run db:inspect
+```
+
+Start the backend on port `5001`:
+
+```bash
 npm start
 ```
-*Note: This will start the API server on port `5001`. It will automatically create the `database.sqlite` file if it doesn't exist.*
 
-### 2. Start the Frontend Server
+Confirm the Oracle MySQL connection at <http://localhost:5001/api/health>.
+
+### 3. Start the frontend
+
+Open another terminal in `frontend`, copy `.env.example` to `.env`, and run:
+
 ```bash
-cd frontend
 npm install
-```
-**CRITICAL STEP:** You must copy the environment variables file for the frontend to know how to connect to the backend API.
-*   Duplicate the `.env.example` file located in the `frontend/` folder.
-*   Rename the duplicated file to exactly `.env`.
-
-Once the `.env` file is created, you can start the server:
-```bash
 npm run dev
 ```
-*Note: This will start the Vite React server (usually on `http://localhost:5173`).*
 
-### Test Accounts
-- **Admin:** `admin@admin.com` / `admin123`
-- **User:** Register a new account via the UI, or look in the SQLite database for test accounts.
+The frontend connects to `http://localhost:5001/api`.
 
----
+## View the database
 
-## 🛠️ Troubleshooting
+Use MySQL Workbench and create a local connection with host `127.0.0.1`, port `3306`, user
+`community_app`, and the password from `backend/.env`. Open the `smart_community` schema to
+browse tables, run SQL queries, and reverse-engineer the ERD.
 
-**"Port 5001 is already in use" / Server won't start:**
-Sometimes when you stop the backend server using `Ctrl + C`, the node process doesn't close completely and port 5001 remains open in the background. If you try to run `npm start` again, you will get an error like this:
+Useful demonstration queries are available in `backend/demo-queries.sql`.
 
-```bash
-> smart-community-backend@1.0.0 start
-> node server.js
+## Test accounts
 
-node:events:486
-      throw er; // Unhandled 'error' event
-      ^
+- Admin: `admin@admin.com` / `admin123`
+- Resident: `resident@example.com` / `resident123`
 
-Error: listen EADDRINUSE: address already in use :::5001
-...
-```
+## REST API coverage
 
-If you receive this `EADDRINUSE` error, it means the port is stuck. To completely kill the background process and free up port 5001, run the following command:
+- Authentication: register and login
+- Activities: list, details, create, update, delete
+- Schedules: list, create, update, delete
+- Registrations: capacity checking, duplicate prevention, participation history, admin report
+- Announcements: list, create, delete
 
-```bash
-kill -9 $(lsof -t -i:5001)
-```
+## Team responsibilities
 
-After running that command, the port will be completely cleared. You can then run `npm start` again and it will successfully start up:
-```bash
-> smart-community-backend@1.0.0 start
-> node server.js
-
-Server running on port 5001
-```
+- Requirement analysis and report: Terrell
+- Frontend/backend foundation: Saabiresh
+- Frontend UI: Aryan
+- MySQL/MariaDB database: Ariharan and Zhi Le
+- Demonstration: each member explains their contribution

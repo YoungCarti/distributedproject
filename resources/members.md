@@ -18,7 +18,7 @@ Report
 Technology Stack:
 - Frontend : React
 - Backend : Node.js
-- Database : MySQL or Firebase
+- Database : Oracle MySQL 8.4 Community Server
 - Design UI: Figma
 
 
